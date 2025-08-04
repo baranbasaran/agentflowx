@@ -1,0 +1,77 @@
+service: agenflowx-backend
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-north-1'}
+  environment:
+    NODE_ENV: ${self:provider.stage}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "arn:aws:logs:*:*:*"
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3000
+    lambdaPort: 3002
+    noPrependStageInUrl: true
+
+functions:
+  generate:
+    handler: functions/generate.handler
+    events:
+      - http:
+          path: /generate
+          method: post
+          cors: true
+          request:
+            schemas:
+              application/json:
+                type: object
+                properties:
+                  prompt:
+                    type: string
+                    minLength: 1
+                required:
+                  - prompt
+
+  convert:
+    handler: functions/convert.handler
+    events:
+      - http:
+          path: /convert
+          method: post
+          cors: true
+          request:
+            schemas:
+              application/json:
+                type: object
+                properties:
+                  workflow:
+                    type: object
+                required:
+                  - workflow
+
+package:
+  patterns:
+    - '!node_modules/.prisma/**'
+    - '!node_modules/@prisma/client/libquery_engine-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!tests/**'
+    - '!coverage/**'
+    - '!.git/**'
+    - '!.vscode/**'
+    - '!README.md'
+    - '!.env*'
