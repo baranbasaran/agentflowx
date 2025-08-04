@@ -3,31 +3,29 @@ import { getStructuredWorkflow } from '../lib/llm'
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
-    // Parse request body
     const body = JSON.parse(event.body || '{}')
     const prompt = body.prompt
 
-    // Validate input
     if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Invalid prompt input.' }),
+        body: JSON.stringify({ error: 'Missing or invalid "prompt" in request body.' }),
       }
     }
 
-    // Call LLM service (mocked or real)
     const workflow = await getStructuredWorkflow(prompt)
 
     return {
       statusCode: 200,
       body: JSON.stringify(workflow),
+      headers: { 'Content-Type': 'application/json' },
     }
 
-  } catch (error) {
-    console.error('Error in /generate:', error)
+  } catch (err) {
+    console.error('Error in /generate:', err)
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error.' }),
+      body: JSON.stringify({ error: 'Internal Server Error' }),
     }
   }
 }

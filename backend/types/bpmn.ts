@@ -1,5 +1,5 @@
-export type BPMNNodeType = 'startEvent' | 'endEvent' | 'userTask' | 'serviceTask' | 'exclusiveGateway'
-
+export const NODE_TYPES = ['startEvent', 'endEvent', 'userTask', 'serviceTask', 'exclusiveGateway'] as const
+export type BPMNNodeType = typeof NODE_TYPES[number]
 export interface BPMNNode {
   id: string
   name: string

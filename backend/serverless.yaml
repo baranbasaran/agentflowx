@@ -1,6 +1,6 @@
 service: agenflowx-backend
 
-frameworkVersion: '4'
+frameworkVersion: '3'
 
 provider:
   name: aws
@@ -9,6 +9,7 @@ provider:
   region: ${opt:region, 'eu-north-1'}
   environment:
     NODE_ENV: ${self:provider.stage}
+    OPENAI_API_KEY: ${env:OPENAI_API_KEY}
   iam:
     role:
       statements:
